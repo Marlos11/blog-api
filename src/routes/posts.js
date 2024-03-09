@@ -77,5 +77,26 @@ export const postsRoutes = async (app) => {
 
         return reply.status(200).send(posts[postIndex])
     })
+
+    app.delete('/posts/:id',{onRequest:[isAuth]},(request,reply)=>{
+
+        const {id} = request.params 
+
+        const postIndex = posts.findIndex(post =>post.id === +id)
+
+        if(postIndex ===-1){
+            return reply.status(404).send({message:'post not found'})
+        }
+
+        const {username} = request.body 
+
+        if(username !== posts[postIndex].owner){
+            return reply.status(400).send({message:'user not a owner post '})
+        }
+
+        posts.splice(postIndex,1)
+
+        return reply.status(204).send()
+    })
 }
 
