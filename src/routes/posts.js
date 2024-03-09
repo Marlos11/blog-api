@@ -52,6 +52,30 @@ export const postsRoutes = async (app) => {
         posts[postIndex].comments.push(comment)
 
         return reply.status(201).send(posts[postIndex])
+    }) 
+
+    app.patch('/posts/:id/like',{onRequest:[isAuth]},(request,reply)=>{
+        const {id} = request.params 
+
+        const postIndex = posts.findIndex(post =>post.id === +id)
+
+        if(postIndex ===-1){
+            return reply.status(404).send({message:'post not found'})
+        }
+
+        const {username} = request.body
+
+        const likeIndex = posts[postIndex].like.findIndex(item=> item === username )
+
+        if(likeIndex>=0){
+            posts[postIndex].like.splice(likeIndex,1)
+
+            return reply.status(200).send(posts[postIndex])
+        }
+
+        posts[postIndex].like.push(username)
+
+        return reply.status(200).send(posts[postIndex])
     })
 }
 
